@@ -1,9 +1,9 @@
 ---
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import PostCard from '../../components/PostCard.astro';
-import ThemeFilter from '../../components/ThemeFilter.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import CategoryBadge from '../../components/CategoryBadge.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 
@@ -11,142 +11,123 @@ const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
-// Group posts by theme
-const postsByTheme = posts.reduce((acc, post) => {
-	const theme = post.data.theme || 'General';
-	if (!acc[theme]) acc[theme] = [];
-	acc[theme].push(post);
-	return acc;
-}, {} as Record<string, typeof posts>);
-
-const themes = Object.keys(postsByTheme);
-const featuredPost = posts[0]; // Most recent post as featured
-const regularPosts = posts.slice(1);
+// Get all unique themes for category tabs
+const themes = [...new Set(posts.map(post => post.data.theme).filter(Boolean))];
+const categories = ['All', ...themes];
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={`Research - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
-		<style>
-			body {
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-				line-height: 1.6;
-				color: #111827;
-				background: #fafafa;
-			}
-
-			main {
-				max-width: 1200px;
-				margin: 0 auto;
-				padding: 2rem;
-			}
-
-			.page-header {
-				text-align: center;
-				margin-bottom: 3rem;
-			}
-
-			.page-title {
-				font-size: 2.5rem;
-				font-weight: 700;
-				margin: 0 0 1rem 0;
-				color: #111827;
-			}
-
-			.page-description {
-				font-size: 1.125rem;
-				color: #6b7280;
-				margin: 0;
-			}
-
-
-			.featured-section {
-				margin-bottom: 4rem;
-			}
-
-			.featured-title {
-				font-size: 1.5rem;
-				font-weight: 600;
-				margin-bottom: 1.5rem;
-				color: #111827;
-			}
-
-			.posts-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-				gap: 2rem;
-				margin-bottom: 4rem;
-			}
-
-			.posts-section {
-				margin-bottom: 4rem;
-			}
-
-			.section-title {
-				font-size: 1.5rem;
-				font-weight: 600;
-				margin-bottom: 1.5rem;
-				color: #111827;
-			}
-
-			@media (max-width: 768px) {
-				main {
-					padding: 1rem;
-				}
-
-				.page-title {
-					font-size: 2rem;
-				}
-
-				.page-description {
-					font-size: 1rem;
-				}
-
-				.posts-grid {
-					grid-template-columns: 1fr;
-					gap: 1.5rem;
-				}
-
-			}
-		</style>
 	</head>
-	<body>
+	<body class="min-h-screen bg-white">
 		<Header />
-		<main>
-			<div class="page-header">
-				<h1 class="page-title">Research</h1>
-				<p class="page-description">Daily insights and research findings</p>
-			</div>
+		
+		<div class="max-w-7xl mx-auto flex">
+			<Sidebar />
+			
+			<main class="flex-1 p-6">
+				<div class="mb-8">
+					<h1 class="text-4xl font-bold text-black mb-8">Research</h1>
 
-			{themes.length > 0 && (
-				<ThemeFilter themes={themes} />
-			)}
+					<!-- Category Tabs -->
+					<div class="flex items-center justify-between mb-6">
+						<div class="flex gap-1" id="category-tabs">
+							{categories.map((category) => (
+								<button
+									class={`px-4 py-2 text-sm transition-colors category-tab ${
+										category === 'All' 
+											? 'bg-black text-white' 
+											: 'text-gray-600 hover:text-gray-900'
+									}`}
+									data-category={category}
+								>
+									{category}
+								</button>
+							))}
+						</div>
 
-			{featuredPost && (
-				<section class="featured-section">
-					<h2 class="featured-title">Latest</h2>
-					<div class="posts-grid">
-						<div data-theme={featuredPost.data.theme || 'General'}>
-							<PostCard post={featuredPost} featured={true} />
+						<div class="flex items-center gap-2">
+							<button class="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+								</svg>
+								Filter
+							</button>
+							<button class="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+								Sort 
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+								</svg>
+							</button>
+							<button class="p-1.5 hover:bg-gray-100 rounded-md transition-colors">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+								</svg>
+							</button>
 						</div>
 					</div>
-				</section>
-			)}
+				</div>
 
-			{regularPosts.length > 0 && (
-				<section class="posts-section">
-					<h2 class="section-title">Previous Posts</h2>
-					<div class="posts-grid">
-						{regularPosts.map(post => (
-							<div data-theme={post.data.theme || 'General'}>
-								<PostCard post={post} />
+				<!-- Blog Posts -->
+				<div class="space-y-8" id="posts-container">
+					{posts.map((post) => (
+						<article class="border-b border-gray-100 pb-8 last:border-b-0 post-item" data-theme={post.data.theme || 'General'}>
+							<div class="flex items-start gap-4">
+								<div class="flex-shrink-0">
+									<CategoryBadge category={post.data.theme || 'General'} />
+								</div>
+								<div class="flex-1 min-w-0">
+									<div class="text-sm text-gray-500 mb-2">
+										<FormattedDate date={post.data.pubDate} />
+									</div>
+									<h2 class="text-xl font-semibold text-black mb-3 leading-tight">
+										<a href={`/blog/${post.id}/`} class="hover:underline">
+											{post.data.title}
+										</a>
+									</h2>
+									<p class="text-gray-600 text-sm leading-relaxed">
+										{post.data.excerpt || post.data.description}
+									</p>
+								</div>
 							</div>
-						))}
-					</div>
-				</section>
-			)}
-		</main>
-		<Footer />
+						</article>
+					))}
+				</div>
+			</main>
+		</div>
+
+		<script>
+			// Category filtering functionality
+			document.addEventListener('DOMContentLoaded', function() {
+				const tabs = document.querySelectorAll('.category-tab');
+				const posts = document.querySelectorAll('.post-item');
+
+				tabs.forEach(tab => {
+					tab.addEventListener('click', function() {
+						const selectedCategory = this.getAttribute('data-category');
+						
+						// Update active tab
+						tabs.forEach(t => {
+							t.classList.remove('bg-black', 'text-white');
+							t.classList.add('text-gray-600', 'hover:text-gray-900');
+						});
+						this.classList.add('bg-black', 'text-white');
+						this.classList.remove('text-gray-600', 'hover:text-gray-900');
+						
+						// Filter posts
+						posts.forEach(post => {
+							const postTheme = post.getAttribute('data-theme');
+							if (selectedCategory === 'All' || postTheme === selectedCategory) {
+								post.style.display = 'block';
+							} else {
+								post.style.display = 'none';
+							}
+						});
+					});
+				});
+			});
+		</script>
 	</body>
 </html>

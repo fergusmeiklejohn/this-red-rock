@@ -1,0 +1,31 @@
+---
+interface Props {
+	category: string;
+}
+
+const { category } = Astro.props;
+
+function getCategoryClasses(category: string) {
+	switch (category) {
+		case 'Machine Learning':
+		case 'Publication':
+			return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+		case 'Data Science':
+		case 'Safety':
+			return 'bg-red-100 text-red-800 hover:bg-red-200';
+		case 'Release':
+		case 'Research':
+			return 'bg-green-100 text-green-800 hover:bg-green-200';
+		case 'Conclusion':
+			return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
+		case 'Milestone':
+			return 'bg-orange-100 text-orange-800 hover:bg-orange-200';
+		default:
+			return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+	}
+}
+---
+
+<span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${getCategoryClasses(category)}`}>
+	{category}
+</span>

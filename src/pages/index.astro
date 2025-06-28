@@ -1,199 +1,84 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import PostCard from '../components/PostCard.astro';
+import Sidebar from '../components/Sidebar.astro';
+import CategoryBadge from '../components/CategoryBadge.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-).slice(0, 3); // Show only 3 most recent posts
+).slice(0, 5); // Show only 5 most recent posts
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			body {
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-				line-height: 1.6;
-				color: #111827;
-				background: #fafafa;
-			}
-
-			main {
-				max-width: 1200px;
-				margin: 0 auto;
-				padding: 2rem;
-			}
-
-			.hero {
-				text-align: center;
-				padding: 4rem 0 6rem 0;
-				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-				margin: -2rem -2rem 4rem -2rem;
-				color: white;
-			}
-
-			.hero-title {
-				font-size: 3.5rem;
-				font-weight: 700;
-				margin: 0 0 1rem 0;
-				line-height: 1.1;
-			}
-
-			.hero-subtitle {
-				font-size: 1.25rem;
-				opacity: 0.9;
-				margin: 0;
-				font-weight: 400;
-			}
-
-			.recent-posts {
-				margin-bottom: 4rem;
-			}
-
-			.section-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 2rem;
-			}
-
-			.section-title {
-				font-size: 2rem;
-				font-weight: 700;
-				margin: 0;
-				color: #111827;
-			}
-
-			.view-all-link {
-				color: #6366f1;
-				text-decoration: none;
-				font-weight: 500;
-				transition: color 0.2s ease;
-			}
-
-			.view-all-link:hover {
-				color: #4f46e5;
-			}
-
-			.posts-grid {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-				gap: 2rem;
-			}
-
-			.about-section {
-				background: white;
-				border-radius: 12px;
-				padding: 3rem;
-				border: 1px solid #e5e7eb;
-				text-align: center;
-			}
-
-			.about-title {
-				font-size: 1.75rem;
-				font-weight: 600;
-				margin: 0 0 1rem 0;
-				color: #111827;
-			}
-
-			.about-text {
-				font-size: 1.125rem;
-				color: #6b7280;
-				margin: 0 0 2rem 0;
-				line-height: 1.7;
-			}
-
-			.cta-button {
-				display: inline-block;
-				padding: 0.75rem 2rem;
-				background: #6366f1;
-				color: white;
-				text-decoration: none;
-				border-radius: 0.5rem;
-				font-weight: 500;
-				transition: background 0.2s ease;
-			}
-
-			.cta-button:hover {
-				background: #4f46e5;
-			}
-
-			@media (max-width: 768px) {
-				main {
-					padding: 1rem;
-				}
-
-				.hero {
-					margin: -1rem -1rem 3rem -1rem;
-					padding: 3rem 1rem 4rem 1rem;
-				}
-
-				.hero-title {
-					font-size: 2.5rem;
-				}
-
-				.hero-subtitle {
-					font-size: 1.125rem;
-				}
-
-				.section-title {
-					font-size: 1.5rem;
-				}
-
-				.posts-grid {
-					grid-template-columns: 1fr;
-					gap: 1.5rem;
-				}
-
-				.about-section {
-					padding: 2rem;
-				}
-
-				.section-header {
-					flex-direction: column;
-					align-items: flex-start;
-					gap: 1rem;
-				}
-			}
-		</style>
 	</head>
-	<body>
+	<body class="min-h-screen bg-white">
 		<Header />
-		<main>
-			<section class="hero">
-				<h1 class="hero-title">Research Blog</h1>
-				<p class="hero-subtitle">Daily insights and research findings</p>
-			</section>
+		
+		<div class="max-w-7xl mx-auto flex">
+			<Sidebar />
+			
+			<main class="flex-1 p-6">
+				<div class="mb-8">
+					<h1 class="text-4xl font-bold text-black mb-4">Welcome</h1>
+					<p class="text-gray-600 text-lg mb-8">
+						Daily insights and research findings across various domains.
+					</p>
+				</div>
 
-			{posts.length > 0 && (
-				<section class="recent-posts">
-					<div class="section-header">
-						<h2 class="section-title">Recent Posts</h2>
-						<a href="/blog" class="view-all-link">View all posts →</a>
+				<!-- Recent Posts -->
+				<div class="mb-8">
+					<div class="flex items-center justify-between mb-6">
+						<h2 class="text-2xl font-semibold text-black">Recent Posts</h2>
+						<a href="/blog" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+							View all →
+						</a>
 					</div>
-					<div class="posts-grid">
-						{posts.map(post => (
-							<PostCard post={post} />
+					
+					<div class="space-y-6">
+						{posts.map((post) => (
+							<article class="border-b border-gray-100 pb-6 last:border-b-0">
+								<div class="flex items-start gap-4">
+									<div class="flex-shrink-0">
+										<CategoryBadge category={post.data.theme || 'General'} />
+									</div>
+									<div class="flex-1 min-w-0">
+										<div class="text-sm text-gray-500 mb-2">
+											<FormattedDate date={post.data.pubDate} />
+										</div>
+										<h3 class="text-lg font-semibold text-black mb-2 leading-tight">
+											<a href={`/blog/${post.id}/`} class="hover:underline">
+												{post.data.title}
+											</a>
+										</h3>
+										<p class="text-gray-600 text-sm leading-relaxed">
+											{post.data.excerpt || post.data.description}
+										</p>
+									</div>
+								</div>
+							</article>
 						))}
 					</div>
-				</section>
-			)}
+				</div>
 
-			<section class="about-section">
-				<h2 class="about-title">About This Research</h2>
-				<p class="about-text">
-					Welcome to my research blog. Here I share daily insights, findings, and thoughts 
-					on various topics organized by themes and series. Each post represents a step 
-					in the journey of understanding complex problems and developing solutions.
-				</p>
-				<a href="/about" class="cta-button">Learn More</a>
-			</section>
-		</main>
-		<Footer />
+				<!-- About Section -->
+				<div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+					<h2 class="text-xl font-semibold text-black mb-3">About This Research</h2>
+					<p class="text-gray-600 leading-relaxed mb-4">
+						Welcome to my research blog. Here I share daily insights, findings, and thoughts 
+						on various topics organized by themes and series. Each post represents a step 
+						in the journey of understanding complex problems and developing solutions.
+					</p>
+					<a href="/about" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors">
+						Learn more →
+					</a>
+				</div>
+			</main>
+		</div>
 	</body>
 </html>
