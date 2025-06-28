@@ -1,0 +1,103 @@
+---
+interface Props {
+	themes: string[];
+	currentTheme?: string;
+}
+
+const { themes, currentTheme } = Astro.props;
+---
+
+<div class="theme-filters" id="theme-filters">
+	<button 
+		class={`theme-filter ${!currentTheme ? 'active' : ''}`} 
+		data-theme="all"
+	>
+		All
+	</button>
+	{themes.map(theme => (
+		<button 
+			class={`theme-filter ${currentTheme === theme ? 'active' : ''}`}
+			data-theme={theme}
+		>
+			{theme}
+		</button>
+	))}
+</div>
+
+<style>
+	.theme-filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		justify-content: center;
+		margin-bottom: 3rem;
+	}
+
+	.theme-filter {
+		padding: 0.5rem 1rem;
+		background: white;
+		border: 1px solid #e5e7eb;
+		border-radius: 2rem;
+		color: #6b7280;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		font-family: inherit;
+	}
+
+	.theme-filter:hover,
+	.theme-filter.active {
+		background: #6366f1;
+		color: white;
+		border-color: #6366f1;
+	}
+
+	@media (max-width: 768px) {
+		.theme-filters {
+			justify-content: flex-start;
+		}
+	}
+</style>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const filters = document.querySelectorAll('.theme-filter');
+		const posts = document.querySelectorAll('[data-theme]');
+
+		filters.forEach(filter => {
+			filter.addEventListener('click', function() {
+				const selectedTheme = this.getAttribute('data-theme');
+				
+				// Update active filter
+				filters.forEach(f => f.classList.remove('active'));
+				this.classList.add('active');
+				
+				// Filter posts
+				posts.forEach(post => {
+					const postTheme = post.getAttribute('data-theme');
+					
+					if (selectedTheme === 'all' || postTheme === selectedTheme || postTheme === 'General' && selectedTheme === 'all') {
+						post.style.display = 'block';
+						// Animate in
+						post.style.opacity = '0';
+						post.style.transform = 'translateY(20px)';
+						setTimeout(() => {
+							post.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+							post.style.opacity = '1';
+							post.style.transform = 'translateY(0)';
+						}, 50);
+					} else {
+						// Animate out
+						post.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+						post.style.opacity = '0';
+						post.style.transform = 'translateY(-10px)';
+						setTimeout(() => {
+							post.style.display = 'none';
+						}, 200);
+					}
+				});
+			});
+		});
+	});
+</script>
