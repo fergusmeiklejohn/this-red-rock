@@ -1,25 +1,20 @@
 ---
 import { SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+import SearchComponent from './SearchComponent';
+
+const posts = await getCollection('blog');
 ---
 
-<header class="border-b border-gray-200 px-6 py-4">
+<header class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 bg-white dark:bg-gray-900">
 	<div class="flex items-center justify-between max-w-7xl mx-auto">
-		<div class="flex items-center gap-4">
-			<a href="/" class="text-xl font-semibold text-black">
+		<div class="flex items-center">
+			<a href="/" class="text-xl font-semibold text-black dark:text-white">
 				{SITE_TITLE}
 			</a>
-			<div class="w-4 h-4 border border-gray-300 rounded-sm"></div>
 		</div>
 		<div class="flex items-center gap-4">
-			<button class="p-2 hover:bg-gray-100 rounded-md transition-colors">
-				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"></path>
-				</svg>
-				<span class="sr-only">Search</span>
-			</button>
-			<button class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-				Log in
-			</button>
+			<SearchComponent posts={posts} client:load />
 		</div>
 	</div>
 </header>

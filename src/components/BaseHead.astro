@@ -30,6 +30,33 @@ const { title, description, image = FallbackImage } = Astro.props;
 />
 <meta name="generator" content={Astro.generator} />
 
+<!-- Dark mode script (loads early to prevent flash) -->
+<script is:inline>
+(function() {
+  function applyDarkMode() {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }
+
+  // Apply immediately to prevent flash
+  applyDarkMode();
+
+  // Listen for changes
+  if (window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', applyDarkMode);
+    } else if (mediaQuery.addListener) {
+      // Fallback for older browsers
+      mediaQuery.addListener(applyDarkMode);
+    }
+  }
+})();
+</script>
+
 <!-- Font preloads -->
 <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
 <link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />

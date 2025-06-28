@@ -13,27 +13,15 @@ const sidebarItems = [
 const currentPath = Astro.url.pathname;
 ---
 
-<aside class="w-64 border-r border-gray-200 min-h-screen p-6">
-	<div class="mb-6">
-		<button class="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors">
-			<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-			</svg>
-			<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 12 2-2m0 0 7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m0 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V10M9 21h6"></path>
-			</svg>
-			Home
-		</button>
-	</div>
-
+<aside class="w-64 border-r border-gray-200 dark:border-gray-700 min-h-screen p-6 bg-white dark:bg-gray-900">
 	<nav class="space-y-1">
 		{sidebarItems.map((item) => (
 			<a
 				href={item.href}
 				class={`block px-3 py-2 text-sm rounded-md transition-colors ${
 					currentPath === item.href || (item.href === '/blog' && currentPath.startsWith('/blog'))
-						? "bg-gray-100 text-gray-900 font-medium"
-						: "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+						? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium"
+						: "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
 				}`}
 			>
 				{item.name}
@@ -42,12 +30,12 @@ const currentPath = Astro.url.pathname;
 	</nav>
 
 	<div class="mt-8">
-		<h3 class="text-sm font-medium text-gray-500 mb-3">Latest Posts</h3>
+		<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Latest Posts</h3>
 		<nav class="space-y-1">
 			{posts.map((post) => (
 				<a
 					href={`/blog/${post.id}/`}
-					class="block px-3 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors"
+					class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
 				>
 					{post.data.title}
 				</a>

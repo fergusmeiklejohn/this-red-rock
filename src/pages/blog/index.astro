@@ -21,7 +21,7 @@ const categories = ['All', ...themes];
 	<head>
 		<BaseHead title={`Research - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 	</head>
-	<body class="min-h-screen bg-white">
+	<body class="min-h-screen bg-white dark:bg-gray-900">
 		<Header />
 		
 		<div class="max-w-7xl mx-auto flex">
@@ -29,7 +29,7 @@ const categories = ['All', ...themes];
 			
 			<main class="flex-1 p-6">
 				<div class="mb-8">
-					<h1 class="text-4xl font-bold text-black mb-8">Research</h1>
+					<h1 class="text-4xl font-bold text-black dark:text-white mb-8">Research</h1>
 
 					<!-- Category Tabs -->
 					<div class="flex items-center justify-between mb-6">
@@ -38,8 +38,8 @@ const categories = ['All', ...themes];
 								<button
 									class={`px-4 py-2 text-sm transition-colors category-tab ${
 										category === 'All' 
-											? 'bg-black text-white' 
-											: 'text-gray-600 hover:text-gray-900'
+											? 'bg-black dark:bg-white text-white dark:text-black' 
+											: 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
 									}`}
 									data-category={category}
 								>
@@ -49,19 +49,19 @@ const categories = ['All', ...themes];
 						</div>
 
 						<div class="flex items-center gap-2">
-							<button class="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+							<button class="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
 								</svg>
 								Filter
 							</button>
-							<button class="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+							<button class="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400">
 								Sort 
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
 								</svg>
 							</button>
-							<button class="p-1.5 hover:bg-gray-100 rounded-md transition-colors">
+							<button class="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors text-gray-600 dark:text-gray-400">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
 								</svg>
@@ -73,25 +73,21 @@ const categories = ['All', ...themes];
 				<!-- Blog Posts -->
 				<div class="space-y-8" id="posts-container">
 					{posts.map((post) => (
-						<article class="border-b border-gray-100 pb-8 last:border-b-0 post-item" data-theme={post.data.theme || 'General'}>
-							<div class="flex items-start gap-4">
-								<div class="flex-shrink-0">
-									<CategoryBadge category={post.data.theme || 'General'} />
-								</div>
-								<div class="flex-1 min-w-0">
-									<div class="text-sm text-gray-500 mb-2">
-										<FormattedDate date={post.data.pubDate} />
-									</div>
-									<h2 class="text-xl font-semibold text-black mb-3 leading-tight">
-										<a href={`/blog/${post.id}/`} class="hover:underline">
-											{post.data.title}
-										</a>
-									</h2>
-									<p class="text-gray-600 text-sm leading-relaxed">
-										{post.data.excerpt || post.data.description}
-									</p>
-								</div>
+						<article class="border-b border-gray-100 dark:border-gray-800 pb-8 last:border-b-0 post-item" data-theme={post.data.theme || 'General'}>
+							<div class="mb-3">
+								<CategoryBadge category={post.data.theme || 'General'} />
 							</div>
+							<div class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+								<FormattedDate date={post.data.pubDate} />
+							</div>
+							<h2 class="text-xl font-semibold text-black dark:text-white mb-3 leading-tight">
+								<a href={`/blog/${post.id}/`} class="hover:underline">
+									{post.data.title}
+								</a>
+							</h2>
+							<p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+								{post.data.excerpt || post.data.description}
+							</p>
 						</article>
 					))}
 				</div>

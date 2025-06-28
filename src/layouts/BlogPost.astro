@@ -17,7 +17,7 @@ const { title, description, pubDate, updatedDate, heroImage, theme, tags } = Ast
 		<BaseHead title={title} description={description} />
 	</head>
 
-	<body class="min-h-screen bg-white">
+	<body class="min-h-screen bg-white dark:bg-gray-900">
 		<Header />
 		
 		<div class="max-w-7xl mx-auto flex">
@@ -40,22 +40,22 @@ const { title, description, pubDate, updatedDate, heroImage, theme, tags } = Ast
 					<header class="mb-8">
 						<div class="flex items-center gap-2 mb-4">
 							{theme && <CategoryBadge category={theme} />}
-							<span class="text-sm text-gray-500">
+							<span class="text-sm text-gray-500 dark:text-gray-400">
 								<FormattedDate date={pubDate} />
 							</span>
 							{updatedDate && (
-								<span class="text-xs text-gray-400">
+								<span class="text-xs text-gray-400 dark:text-gray-500">
 									· Updated <FormattedDate date={updatedDate} />
 								</span>
 							)}
 						</div>
 						
-						<h1 class="text-4xl font-bold text-black mb-4 leading-tight">{title}</h1>
+						<h1 class="text-4xl font-bold text-black dark:text-white mb-4 leading-tight">{title}</h1>
 						
 						{tags && tags.length > 0 && (
 							<div class="flex gap-2 flex-wrap">
 								{tags.map(tag => (
-									<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+									<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md">
 										{tag}
 									</span>
 								))}
