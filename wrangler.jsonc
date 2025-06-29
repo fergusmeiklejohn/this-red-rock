@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "my-blog",
+	"name": "this-red-rock",
 	"compatibility_date": "2025-06-28",
 	"compatibility_flags": [
 		"nodejs_compat"

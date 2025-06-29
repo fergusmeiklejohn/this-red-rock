@@ -40,7 +40,7 @@ export default function SearchComponent({ posts }: SearchComponentProps) {
 
   const handleSelect = (postId: string) => {
     setIsOpen(false);
-    window.location.href = `/blog/${postId}/`;
+    window.location.href = `/${postId}/`;
   };
 
   return (

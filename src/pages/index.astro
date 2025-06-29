@@ -9,13 +9,17 @@ import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-).slice(0, 5); // Show only 5 most recent posts
+);
+
+// Get all unique themes for category tabs
+const themes = [...new Set(posts.map(post => post.data.theme).filter(Boolean))];
+const categories = ['All', ...themes];
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`Research - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 	</head>
 	<body class="min-h-screen bg-white dark:bg-gray-900">
 		<Header />
@@ -25,56 +29,81 @@ const posts = (await getCollection('blog')).sort(
 			
 			<main class="flex-1 p-6">
 				<div class="mb-8">
-					<h1 class="text-4xl font-bold text-black dark:text-white mb-4">Welcome</h1>
-					<p class="text-gray-600 dark:text-gray-300 text-lg mb-8">
-						Daily insights and research findings across various domains.
-					</p>
-				</div>
+					<h1 class="text-4xl font-bold text-black dark:text-white mb-8">Research</h1>
 
-				<!-- Recent Posts -->
-				<div class="mb-8">
-					<div class="flex items-center justify-between mb-6">
-						<h2 class="text-2xl font-semibold text-black dark:text-white">Recent Posts</h2>
-						<a href="/blog" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-							View all →
-						</a>
-					</div>
-					
-					<div class="space-y-6">
-						{posts.map((post) => (
-							<article class="border-b border-gray-100 dark:border-gray-800 pb-6 last:border-b-0">
-								<div class="mb-3">
-									<CategoryBadge category={post.data.theme || 'General'} />
-								</div>
-								<div class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-									<FormattedDate date={post.data.pubDate} />
-								</div>
-								<h3 class="text-lg font-semibold text-black dark:text-white mb-2 leading-tight">
-									<a href={`/blog/${post.id}/`} class="hover:underline">
-										{post.data.title}
-									</a>
-								</h3>
-								<p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-									{post.data.excerpt || post.data.description}
-								</p>
-							</article>
-						))}
+					<!-- Category Tabs -->
+					<div class="mb-6">
+						<div class="flex gap-1" id="category-tabs">
+							{categories.map((category) => (
+								<button
+									class={`px-4 py-2 text-sm transition-colors category-tab ${
+										category === 'All' 
+											? 'bg-black dark:bg-white text-white dark:text-black' 
+											: 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+									}`}
+									data-category={category}
+								>
+									{category}
+								</button>
+							))}
+						</div>
 					</div>
 				</div>
 
-				<!-- About Section -->
-				<div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-					<h2 class="text-xl font-semibold text-black dark:text-white mb-3">About This Research</h2>
-					<p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-						Welcome to my research blog. Here I share daily insights, findings, and thoughts 
-						on various topics organized by themes and series. Each post represents a step 
-						in the journey of understanding complex problems and developing solutions.
-					</p>
-					<a href="/about" class="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-						Learn more →
-					</a>
+				<!-- Blog Posts -->
+				<div class="space-y-8" id="posts-container">
+					{posts.map((post) => (
+						<article class="border-b border-gray-100 dark:border-gray-800 pb-8 last:border-b-0 post-item" data-theme={post.data.theme || 'General'}>
+							<div class="mb-3">
+								<CategoryBadge category={post.data.theme || 'General'} />
+							</div>
+							<div class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+								<FormattedDate date={post.data.pubDate} />
+							</div>
+							<h2 class="text-xl font-semibold text-black dark:text-white mb-3 leading-tight">
+								<a href={`/${post.id}/`} class="hover:underline">
+									{post.data.title}
+								</a>
+							</h2>
+							<p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+								{post.data.excerpt || post.data.description}
+							</p>
+						</article>
+					))}
 				</div>
 			</main>
 		</div>
+
+		<script>
+			// Category filtering functionality
+			document.addEventListener('DOMContentLoaded', function() {
+				const tabs = document.querySelectorAll('.category-tab');
+				const posts = document.querySelectorAll('.post-item');
+
+				tabs.forEach(tab => {
+					tab.addEventListener('click', function() {
+						const selectedCategory = this.getAttribute('data-category');
+						
+						// Update active tab
+						tabs.forEach(t => {
+							t.classList.remove('bg-black', 'text-white');
+							t.classList.add('text-gray-600', 'hover:text-gray-900');
+						});
+						this.classList.add('bg-black', 'text-white');
+						this.classList.remove('text-gray-600', 'hover:text-gray-900');
+						
+						// Filter posts
+						posts.forEach(post => {
+							const postTheme = post.getAttribute('data-theme');
+							if (selectedCategory === 'All' || postTheme === selectedCategory) {
+								post.style.display = 'block';
+							} else {
+								post.style.display = 'none';
+							}
+						});
+					});
+				});
+			});
+		</script>
 	</body>
 </html>
