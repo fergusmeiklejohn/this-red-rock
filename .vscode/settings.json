@@ -1,5 +1,13 @@
 {
 	"files.associations": {
 		"wrangler.json": "jsonc"
+	},
+	"[markdown]": {
+		"editor.formatOnSave": false,
+		"editor.defaultFormatter": null
+	},
+	"[mdx]": {
+		"editor.formatOnSave": false,
+		"editor.defaultFormatter": null
 	}
 }

@@ -14,6 +14,15 @@
 	
 	.prose p {
 		@apply text-gray-700 dark:text-gray-300 leading-relaxed;
+		white-space: pre-wrap;
+	}
+	
+	.prose p + p {
+		@apply mt-4;
+	}
+	
+	.prose p:empty {
+		@apply h-6;
 	}
 	
 	.prose a {

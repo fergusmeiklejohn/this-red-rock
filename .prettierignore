@@ -1,0 +1,7 @@
+# Ignore markdown files
+*.md
+*.mdx
+
+# Ignore build outputs
+dist/
+.astro/
