@@ -1,7 +1,7 @@
 ---
-title: "A Week's Work Before Lunch"
+title: "We’re all managers now."
 description: "On becoming a manager of digital agents and the art of human-AI collaboration"
-excerpt: "We've all been promoted to managers of tireless digital teams. As AI agents compress weeks into mornings, our role shifts from doing to directing, from coding to creative problem-solving."
+excerpt: "As AI agents compress weeks into mornings, our role shifts from doing to directing, from coding to creative problem-solving."
 pubDate: "Jul 10 2025"
 heroImage: "../../assets/all-managers-now.jpg"
 theme: "Working with Claude"
@@ -12,7 +12,7 @@ We’ve all had a promotion. We were called into the big boss’s office to be t
 
 <br>
 
-*We’re all managers now.*
+*A Week's Work Before Lunch*
 
 <br>
 
