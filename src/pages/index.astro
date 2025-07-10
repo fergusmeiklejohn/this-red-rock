@@ -6,6 +6,8 @@ import CategoryBadge from '../components/CategoryBadge.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import heroImage from '../assets/this-red-rock.jpg';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -19,17 +21,30 @@ const categories = ['All', ...themes];
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={`Research - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<BaseHead title={`Writing - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 	</head>
 	<body class="min-h-screen bg-white dark:bg-gray-900">
 		<Header />
+		
+		<!-- Hero Image -->
+		<div class="w-full mb-8">
+			<Image 
+				src={heroImage} 
+				alt="This Red Rock"
+				class="w-full h-96 object-cover"
+				width={1920}
+				height={400}
+				loading="eager"
+				format="webp"
+			/>
+		</div>
 		
 		<div class="max-w-7xl mx-auto flex">
 			<Sidebar />
 			
 			<main class="flex-1 p-6">
 				<div class="mb-8">
-					<h1 class="text-4xl font-bold text-black dark:text-white mb-8">Research</h1>
+					<h1 class="text-4xl font-bold text-black dark:text-white mb-8">Writing</h1>
 
 					<!-- Category Tabs -->
 					<div class="mb-6">
