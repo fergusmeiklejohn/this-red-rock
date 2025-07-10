@@ -8,7 +8,7 @@ theme: "Working with Claude"
 tags: ["AI agents", "productivity", "digital teams", "human creativity", "future of work"]
 ---
 
-We’ve all had a promotion. We were called into the big boss’s office to be told that we are managers now whether we like it or not. Of course most of us are already in a team, which I like very much because we humans like building things together. But this is different, increasingly we're not going to be managing people, we’ll be managing digital agents.. billions of virtual machines that live in the massive new data centers we’re building that need mini nuclear plants to power them. 
+We’ve been promoted. We were called into the big boss’s office to be told that we are managers now, whether we like it or not. Of course most of us are already in a team, which I like very much because we humans like building things together. But this is different, increasingly we're not going to be managing people, we’ll be managing digital agents.. billions of virtual machines that live in the massive new data centers we’re building that need mini nuclear plants to power them. 
 
 <br>
 

@@ -6,8 +6,8 @@ const posts = (await getCollection('blog')).sort(
 ).slice(0, 5); // Get latest 5 posts
 
 const sidebarItems = [
-	{ name: "Research Index", href: "/", active: true },
-	{ name: "Research Overview", href: "/about", active: false },
+	{ name: "Index", href: "/", active: true },
+	{ name: "Overview", href: "/about", active: false },
 ];
 
 const currentPath = Astro.url.pathname;
