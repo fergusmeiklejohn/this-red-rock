@@ -13,7 +13,7 @@ const sidebarItems = [
 const currentPath = Astro.url.pathname;
 ---
 
-<aside class="w-64 border-r border-gray-200 dark:border-gray-700 min-h-screen p-6 bg-white dark:bg-gray-900">
+<aside class="hidden lg:block w-64 border-r border-gray-200 dark:border-gray-700 min-h-screen p-6 bg-white dark:bg-gray-900 flex-shrink-0">
 	<nav class="space-y-1">
 		{sidebarItems.map((item) => (
 			<a

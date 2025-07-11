@@ -46,7 +46,9 @@
 	}
 	
 	.prose img {
-		@apply rounded-lg;
+		@apply rounded-lg max-w-full h-auto;
+		max-height: 70vh;
+		object-fit: contain;
 	}
 }
 
@@ -121,5 +123,15 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  
+  /* Hide scrollbar for category tabs */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
   }
 }

@@ -4,11 +4,33 @@ import { getCollection } from 'astro:content';
 import SearchComponent from './SearchComponent';
 
 const posts = await getCollection('blog');
+
+// Get navigation items for mobile menu
+const sidebarItems = [
+	{ name: "Index", href: "/" },
+	{ name: "Overview", href: "/about" },
+];
+
+// Get latest 5 posts for mobile menu
+const latestPosts = posts.sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+).slice(0, 5);
 ---
 
-<header class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 bg-white dark:bg-gray-900">
+<header class="border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4 bg-white dark:bg-gray-900 relative z-50">
 	<div class="flex items-center justify-between max-w-7xl mx-auto">
-		<div class="flex items-center">
+		<div class="flex items-center gap-4">
+			{/* Hamburger Menu Button - Only visible on mobile/tablet */}
+			<button
+				id="mobile-menu-button"
+				class="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+				aria-label="Toggle menu"
+			>
+				<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+					<path id="close-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
 			<a href="/" class="text-xl font-semibold text-black dark:text-white">
 				{SITE_TITLE}
 			</a>
@@ -18,3 +40,109 @@ const posts = await getCollection('blog');
 		</div>
 	</div>
 </header>
+
+{/* Mobile Navigation Drawer */}
+<div id="mobile-menu" class="fixed inset-0 z-40 hidden">
+	{/* Overlay */}
+	<div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+	
+	{/* Drawer */}
+	<nav class="fixed top-0 left-0 bottom-0 w-64 bg-white dark:bg-gray-900 shadow-xl transform -translate-x-full transition-transform duration-300" id="mobile-menu-drawer">
+		<div class="p-6">
+			{/* Close button */}
+			<button
+				id="mobile-menu-close"
+				class="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+				aria-label="Close menu"
+			>
+				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
+			
+			{/* Navigation Items */}
+			<div class="mt-8">
+				<nav class="space-y-1">
+					{sidebarItems.map((item) => (
+						<a
+							href={item.href}
+							class="block px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+						>
+							{item.name}
+						</a>
+					))}
+				</nav>
+				
+				{/* Latest Posts */}
+				<div class="mt-8">
+					<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Latest Posts</h3>
+					<nav class="space-y-1">
+						{latestPosts.map((post) => (
+							<a
+								href={`/${post.id}/`}
+								class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+							>
+								{post.data.title}
+							</a>
+						))}
+					</nav>
+				</div>
+			</div>
+		</div>
+	</nav>
+</div>
+
+<script>
+	// Mobile menu functionality
+	const mobileMenuButton = document.getElementById('mobile-menu-button');
+	const mobileMenu = document.getElementById('mobile-menu');
+	const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
+	const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+	const mobileMenuClose = document.getElementById('mobile-menu-close');
+	const menuIcon = document.getElementById('menu-icon');
+	const closeIcon = document.getElementById('close-icon');
+	
+	function openMobileMenu() {
+		mobileMenu?.classList.remove('hidden');
+		setTimeout(() => {
+			mobileMenuDrawer?.classList.remove('-translate-x-full');
+		}, 10);
+		menuIcon?.classList.add('hidden');
+		closeIcon?.classList.remove('hidden');
+		document.body.style.overflow = 'hidden';
+	}
+	
+	function closeMobileMenu() {
+		mobileMenuDrawer?.classList.add('-translate-x-full');
+		setTimeout(() => {
+			mobileMenu?.classList.add('hidden');
+		}, 300);
+		menuIcon?.classList.remove('hidden');
+		closeIcon?.classList.add('hidden');
+		document.body.style.overflow = '';
+	}
+	
+	mobileMenuButton?.addEventListener('click', () => {
+		if (mobileMenu?.classList.contains('hidden')) {
+			openMobileMenu();
+		} else {
+			closeMobileMenu();
+		}
+	});
+	
+	mobileMenuClose?.addEventListener('click', closeMobileMenu);
+	mobileMenuOverlay?.addEventListener('click', closeMobileMenu);
+	
+	// Close menu when clicking on a link
+	const mobileMenuLinks = mobileMenu?.querySelectorAll('a');
+	mobileMenuLinks?.forEach(link => {
+		link.addEventListener('click', closeMobileMenu);
+	});
+	
+	// Close menu on escape key
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && !mobileMenu?.classList.contains('hidden')) {
+			closeMobileMenu();
+		}
+	});
+</script>

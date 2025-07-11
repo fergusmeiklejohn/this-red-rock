@@ -58,13 +58,13 @@ export default function SearchComponent({ posts }: SearchComponentProps) {
 
       {/* Search Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="p-0 max-w-2xl top-[20%] translate-y-0 border-2 border-gray-300 dark:border-gray-600">
+        <DialogContent className="p-0 max-w-[90vw] sm:max-w-2xl top-[20%] translate-y-0 border-2 border-gray-300 dark:border-gray-600">
           <Command className="rounded-lg border-0 shadow-lg">
             <CommandInput
               placeholder="Search posts... (⌘K to open)"
               className="border-0 focus:ring-0"
             />
-            <CommandList className="max-h-96">
+            <CommandList className="max-h-[50vh] sm:max-h-96">
               <CommandEmpty className="py-8 text-center text-muted-foreground">
                 No posts found.
               </CommandEmpty>
