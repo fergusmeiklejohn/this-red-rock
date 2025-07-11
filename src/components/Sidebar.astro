@@ -19,7 +19,7 @@ const currentPath = Astro.url.pathname;
 			<a
 				href={item.href}
 				class={`block px-3 py-2 text-sm rounded-md transition-colors ${
-					currentPath === item.href || (item.href === '/' && currentPath !== '/' && currentPath !== '/about')
+					currentPath === item.href
 						? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium"
 						: "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
 				}`}
