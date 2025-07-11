@@ -15,6 +15,9 @@ const sidebarItems = [
 const latestPosts = posts.sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 ).slice(0, 5);
+
+// Get current path for active state
+const currentPath = Astro.url.pathname;
 ---
 
 <header class="border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4 bg-white dark:bg-gray-900 relative z-50">
@@ -66,7 +69,11 @@ const latestPosts = posts.sort(
 					{sidebarItems.map((item) => (
 						<a
 							href={item.href}
-							class="block px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+							class={`block px-3 py-2 text-sm rounded-md transition-colors ${
+								currentPath === item.href
+									? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium"
+									: "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+							}`}
 						>
 							{item.name}
 						</a>
