@@ -7,7 +7,6 @@ const posts = (await getCollection('blog')).sort(
 
 const sidebarItems = [
 	{ name: "Index", href: "/", active: true },
-	{ name: "Overview", href: "/about", active: false },
 ];
 
 const currentPath = Astro.url.pathname;
