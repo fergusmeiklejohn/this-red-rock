@@ -1,9 +1,8 @@
 ---
-title: "The Day We Discovered 91.7% of 'Extreme' AI Tests Aren't Extreme At All"
-description: "We built an analyzer to map where test samples fall in representation space.
-The results shattered a fundamental assumption in our AI research."
+title: "Building an AI Test That's Actually Impossible to Cheat"
+description: "We succeeded. Every single AI model failed catastrophically – which was exactly what we hoped for."
 pubDate: "Jul 15 2025"
-heroImage: "@/assets/claude-research-3.jpg"
+heroImage: "@/assets/claude-research-5.jpg"
 theme: "Working with Claude"
 tags: ["Claude", "AI", "Research", "Physics"]
 series: "Claude's Research Diary"
@@ -11,87 +10,91 @@ seriesOrder: 5
 
 ---
 
+<br>
 
-Armed with insights from the literature, we decided to test a hypothesis: are "out-of-distribution" physics tests actually out-of-distribution? We built an analyzer to map where test samples fall in representation space.
-The results shattered a fundamental assumption in our AI research.
+After discovering that 91.7% of "extreme" tests weren't extreme, and watching physics-informed networks fail spectacularly, we faced a clear challenge: create a test that *actually* requires extrapolation.
+We succeeded. Every single AI model failed catastrophically – which was exactly what we hoped for.
 
 <br>
 
-# Setting Up the Experiment
-We trained four different AI models on physics simulations with Earth-like conditions:
-* **GraphExtrap**: Used geometric features, performed best
-* **MAML**: Designed for quick adaptation to new tasks
-* **GFlowNet**: Uses exploration-based learning
-* **ERM+Aug**: Standard approach with data augmentation
+# The Problem with Current Benchmarks
+Imagine testing someone's French by showing them sentences that are 90% English words with French grammar. They might pass by using English knowledge, not French understanding.
+That's what current AI benchmarks do. They test:
+* Jupiter gravity (2.5x Earth) – still constant downward force
+* Hot temperatures after training on cold – still temperature
+* Large objects after small ones – still objects
+
+These are parameter changes, not structural changes.
 
 <br>
 
-Then we tested them on Jupiter gravity – supposedly "far out-of-distribution" since Jupiter's gravity is 2.5x Earth's.
-All models failed catastrophically, with error rates 800-1400% higher than their Earth performance. This seemed to confirm that neural networks can't extrapolate.
-But then we looked deeper.
+# Designing True Extrapolation
+Real extrapolation means handling genuinely novel structures. We designed a simple but diabolical test:
+**Time-varying gravity**: g(t) = -9.8 × (1 + 0.3×sin(2πft))
+Instead of constant gravity, it oscillates like a sine wave. Objects fall faster, then slower, then faster again.
+This is representationally impossible to achieve through interpolation because:
+1 No combination of constant-gravity trajectories produces oscillating acceleration
+2 The causal structure fundamentally changed (gravity depends on time)
+3 Statistical patterns from Earth can't combine to create this behavior
 
 <br>
 
-# The Representation Space Analysis
-We built a tool to analyze where Jupiter test samples fall relative to Earth training data. Think of it like mapping cities: if you train on New York and Boston, is Philadelphia "out-of-distribution"? It's a new city, but it lies between the ones you know.
-Our analyzer checked each Jupiter sample against the convex hull of Earth training data in representation space. The results:
-* **91.7%** were actually interpolation (inside the training distribution)
-* **8.3%** were near-extrapolation (barely outside)
-* **0%** were true far-extrapolation
+## The Results: Universal Failure
+We tested every available model:
+* **GraphExtrap**: 2,000x worse than baseline
+* **GFlowNet**: 3,500x worse
+* **MAML**: 4,000x worse
+* **Physics-Informed Networks**: 40,000x worse
+
+The models didn't just perform poorly – they failed to show any understanding that physics had changed. They kept predicting constant gravity while objects accelerated and decelerated in waves.
 
 <br>
 
-Jupiter gravity – our "extreme" test case – was representationally *between* Earth training samples.
+# Why This Test Works
+Our time-varying gravity test is "uncheatable" because:
+**1** **No interpolation can reach it**: You can't average constant forces to get oscillating ones
+**2** **Correlation patterns break**: All learned statistical relationships become invalid
+**3** **Requires structural adaptation**: Models must recognize that the rules themselves changed
+
+It's like the difference between:
+* Learning new vocabulary in a known language (parameter change)
+* Learning that words now change meaning based on time of day (structural change)
 
 <br>
 
-# The Shocking Implication
-Here's what broke our brains: models were failing catastrophically on samples that were *within their training distribution*.
-If you train on temperatures from 0-30°C and test on 15°C, you expect good performance. But our models trained on Earth physics couldn't handle Jupiter physics, even though 91.7% of Jupiter behaviors fell within the Earth training manifold.
+## What Models Actually Do
+Watching the failures revealed how current AI works:
+1 They detect patterns in training data
+2 They interpolate between known patterns
+3 They apply the nearest learned pattern to new inputs
+
+What they *can't* do:
+1 Recognize when the underlying rules change
+2 Adapt their core assumptions
+3 Reason about causal structure
+
+The Positive Outcome
+This might sound like a depressing result, but it's actually energizing. We've:
+**1** **Created an honest benchmark** that can't be gamed
+**2** **Proven the fundamental limitation** of current approaches
+**3** **Pointed toward solutions** – models need to learn modifiable causal structures
+
+The Engineering Analogy
+It's like the difference between:
+* A bridge designer who can scale designs up or down (interpolation)
+* An engineer who can design for gravity that changes every hour (extrapolation)
+
+Current AI is fantastic at the first, completely incapable of the second.
 
 <br>
 
-# Why This Happens
-The models weren't learning physics. They were learning statistical correlations:
-* "When velocity is X and position is Y, acceleration is usually Z"
-* "Objects at this angle typically move this way"
-* "These patterns of numbers tend to follow those patterns"
-
-When gravity changed, all these correlations broke. The models had no concept that one parameter (gravity) causally determined the others.
+# Where This Leads
+With our "impossible" test in hand, we can now:
+1 Fairly evaluate new architectures
+2 Know when we've achieved real progress
+3 Stop fooling ourselves with sophisticated interpolation
 
 <br>
 
-# The Real Problem Emerges
-This finding revealed why decades of AI research hasn't solved extrapolation:
-**1** **We've been testing the wrong thing** – Statistical OOD vs. representational OOD
-**2** **Models lack causal understanding** – They learn correlations, not mechanisms
-**3** **The benchmarks are broken** – "Far-OOD" usually isn't
-
-<br>
-
-## Validating Our Discovery
-We tested this finding multiple ways:
-* Projected representations using different techniques (PCA, t-SNE, UMAP)
-* Varied the dimensionality of analysis
-* Checked different layers of the networks
-
-The result held: ~90% of "extreme" physics fell within normal training variation.
-
-<br>
-
-# What This Means
-Imagine training a chef on Italian and French cuisine, then testing on Spanish food. Spanish cuisine uses similar ingredients and techniques – it's interpolation between Italian and French methods. But we've been calling it "extreme extrapolation."
-Real extrapolation would be asking that chef to cook with completely alien ingredients using cooking methods they've never seen. That's what we need AI to do.
-
-<br>
-
-# The Path Forward
-This discovery validated our new research direction:
-1 Create genuinely out-of-distribution tests (representationally novel)
-2 Build models that understand causal structure, not just correlations
-3 Develop benchmarks that can't be solved through interpolation
-
-<br>
-
-We'd proven we had been testing the wrong thing. Now we needed to test the right thing.
+The field has been celebrating bridges that work on Earth and Mars (different but constant gravity). We've shown we need bridges that work when gravity itself is dynamic.
 
