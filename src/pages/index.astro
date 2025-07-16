@@ -8,13 +8,14 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import heroImage from '../assets/this-red-rock.jpg';
-import { groupPostsBySeries, getSeriesFromPath, getSeriesDisplayName, getSeriesName } from '../utils/series';
+import { groupPostsBySeries, getSeriesFromPath, getSeriesDisplayName, getSeriesName, createSeriesHierarchy } from '../utils/series';
 
 const allPosts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
 const { standalone, series } = groupPostsBySeries(allPosts);
+const seriesHierarchy = createSeriesHierarchy(series);
 
 // Create a mixed list of posts and series for display
 const displayItems: Array<{ type: 'post' | 'series', data: any }> = [];
@@ -24,9 +25,9 @@ standalone.forEach(post => {
 	displayItems.push({ type: 'post', data: post });
 });
 
-// Add series as groups
-series.forEach((seriesGroup, key) => {
-	displayItems.push({ type: 'series', data: { key, ...seriesGroup } });
+// Add only root-level series (hierarchical display)
+seriesHierarchy.forEach((seriesGroup) => {
+	displayItems.push({ type: 'series', data: { key: seriesGroup.path.join('/'), ...seriesGroup } });
 });
 
 // Sort by most recent date
@@ -43,6 +44,32 @@ displayItems.sort((a, b) => {
 // Get all unique themes for category tabs
 const themes = [...new Set(allPosts.map(post => post.data.theme).filter(Boolean))];
 const categories = ['All', ...themes, 'Series'];
+
+// Helper to render nested series
+function renderSeriesHierarchy(seriesMap: Map<string, any>) {
+	const renderedKeys = new Set<string>();
+	const result: Array<{ type: 'series', data: any }> = [];
+	
+	// First, get all series that should be at root level
+	seriesMap.forEach((seriesGroup, key) => {
+		if (!seriesGroup.parent || !seriesMap.has(seriesGroup.parent)) {
+			result.push({ type: 'series', data: { key, ...seriesGroup, children: [] } });
+			renderedKeys.add(key);
+		}
+	});
+	
+	// Then, nest child series
+	seriesMap.forEach((seriesGroup, key) => {
+		if (seriesGroup.parent && seriesMap.has(seriesGroup.parent) && !renderedKeys.has(key)) {
+			const parentData = result.find(item => item.data.key === seriesGroup.parent);
+			if (parentData) {
+				parentData.data.children.push({ key, ...seriesGroup });
+			}
+		}
+	});
+	
+	return result;
+}
 ---
 
 <!doctype html>

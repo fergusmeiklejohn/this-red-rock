@@ -79,22 +79,49 @@ export function groupPostsBySeries(posts: CollectionEntry<'blog'>[]): {
   const seriesMap = new Map<string, SeriesGroup>();
   
   posts.forEach(post => {
-    const seriesName = getSeriesName(post);
     const seriesInfo = getSeriesFromPath(post.id);
     
-    if (!seriesName && !seriesInfo) {
+    // Determine if this is a series post
+    const isSeriesPost = post.data.series || seriesInfo;
+    
+    if (!isSeriesPost) {
       standalone.push(post);
     } else {
-      // Use frontmatter series name as key if available, otherwise use path
-      const seriesKey = post.data.series || (seriesInfo ? seriesInfo.fullPath.join('/') : '');
+      // Priority: Use frontmatter series if available, otherwise use path-based grouping
+      let seriesKey: string;
+      let displayName: string | undefined;
+      let path: string[];
+      let name: string;
+      let parent: string | undefined;
+      
+      if (post.data.series) {
+        // Frontmatter series takes precedence
+        seriesKey = post.data.series;
+        displayName = post.data.series;
+        // If we have path info, use it for structure, otherwise create a simple path
+        path = seriesInfo ? seriesInfo.fullPath : [post.data.series];
+        name = seriesInfo?.seriesName || post.data.series;
+        parent = seriesInfo?.parentSeries;
+      } else if (seriesInfo) {
+        // Path-based series
+        seriesKey = seriesInfo.fullPath.join('/');
+        displayName = getSeriesName(post) || undefined;
+        path = seriesInfo.fullPath;
+        name = seriesInfo.seriesName;
+        parent = seriesInfo.parentSeries;
+      } else {
+        // Should not reach here given the isSeriesPost check
+        standalone.push(post);
+        return;
+      }
       
       if (!seriesMap.has(seriesKey)) {
         seriesMap.set(seriesKey, {
-          name: seriesInfo?.seriesName || 'Series',
-          path: seriesInfo?.fullPath || [],
+          name,
+          path,
           posts: [],
-          parent: seriesInfo?.parentSeries,
-          displayName: seriesName || undefined
+          parent,
+          displayName
         });
       }
       
@@ -105,10 +132,15 @@ export function groupPostsBySeries(posts: CollectionEntry<'blog'>[]): {
   // Sort posts within each series by date or episode number
   seriesMap.forEach(series => {
     series.posts.sort((a, b) => {
+      // First try seriesOrder from frontmatter
+      if (a.data.seriesOrder !== undefined && b.data.seriesOrder !== undefined) {
+        return a.data.seriesOrder - b.data.seriesOrder;
+      }
+      
       const aInfo = getSeriesFromPath(a.id);
       const bInfo = getSeriesFromPath(b.id);
       
-      // First try to sort by episode number
+      // Then try to sort by episode number from path
       if (aInfo?.episodeNumber && bInfo?.episodeNumber) {
         return aInfo.episodeNumber - bInfo.episodeNumber;
       }
@@ -144,33 +176,29 @@ export function getSeriesDisplayName(post: CollectionEntry<'blog'>): string {
 
 /**
  * Create a hierarchical structure for nested series
+ * Each post should only appear in its immediate parent folder
  */
 export function createSeriesHierarchy(seriesMap: Map<string, SeriesGroup>): SeriesGroup[] {
-  const rootSeries: SeriesGroup[] = [];
-  const processed = new Set<string>();
+  const allSeries = Array.from(seriesMap.values());
   
-  // First, identify root series (those without parents)
-  seriesMap.forEach((series, key) => {
-    if (!series.parent && !processed.has(key)) {
-      rootSeries.push(series);
-      processed.add(key);
-    }
+  // Sort series by path depth (deeper paths first) to properly identify hierarchy
+  allSeries.sort((a, b) => b.path.length - a.path.length);
+  
+  // Create a map to store series by their path for quick lookup
+  const seriesByPath = new Map<string, SeriesGroup>();
+  allSeries.forEach(series => {
+    seriesByPath.set(series.path.join('/'), series);
   });
   
-  // Then, nest child series
-  seriesMap.forEach((series, key) => {
-    if (series.parent && !processed.has(key)) {
-      // Find parent series
-      const parentKey = series.path.slice(0, -1).join('/');
-      const parentSeries = Array.from(seriesMap.values()).find(s => 
-        s.path.join('/') === parentKey
-      );
-      
-      if (parentSeries) {
-        // Add posts from child series to parent
-        parentSeries.posts.push(...series.posts);
-      }
+  // Filter to only return top-level series (those without parents in the map)
+  const rootSeries = allSeries.filter(series => {
+    if (series.path.length === 1) {
+      return true; // Top-level series
     }
+    
+    // Check if parent exists in the series map
+    const parentPath = series.path.slice(0, -1).join('/');
+    return !seriesByPath.has(parentPath);
   });
   
   return rootSeries;

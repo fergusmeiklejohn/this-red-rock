@@ -16,6 +16,8 @@ interface SeriesGroup {
   name: string;
   displayName?: string;
   posts: BlogPost[];
+  path?: string[];
+  parent?: string;
 }
 
 interface TreeNode {
@@ -157,32 +159,35 @@ export function PostTreeView({ posts, currentPath, standalone, series }: PostTre
   useEffect(() => {
     const nodes: TreeNode[] = [];
     
-    // Add standalone posts
-    standalone.forEach(post => {
-      nodes.push({
-        type: 'post',
-        id: post.id,
-        title: post.data.title,
-        href: `/${post.id}/`,
-      });
-    });
+    // Build a hierarchical structure for series
+    const seriesHierarchy = new Map<string, TreeNode>();
+    const rootSeriesNodes: TreeNode[] = [];
     
-    // Add series - iterate through the Map
+    // First pass: create all series nodes
     if (series && series.size > 0) {
       series.forEach((group, seriesKey) => {
+        const pathParts = group.path || seriesKey.split('/');
         const seriesNode: TreeNode = {
           type: 'series',
           id: seriesKey,
-          title: group.displayName || group.name || seriesKey,
+          title: group.displayName || group.name || pathParts[pathParts.length - 1],
           postCount: group.posts.length,
           children: [],
         };
         
-        // Sort posts by seriesOrder or date
+        // Sort posts by seriesOrder, episode number, or date
         const sortedPosts = [...group.posts].sort((a, b) => {
           if (a.data.seriesOrder !== undefined && b.data.seriesOrder !== undefined) {
             return a.data.seriesOrder - b.data.seriesOrder;
           }
+          
+          // Try to extract episode numbers from the path
+          const aMatch = a.id.match(/(?:Day|Episode|Part)\s+(\d+)/i);
+          const bMatch = b.id.match(/(?:Day|Episode|Part)\s+(\d+)/i);
+          if (aMatch && bMatch) {
+            return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+          }
+          
           return 0;
         });
         
@@ -200,9 +205,58 @@ export function PostTreeView({ posts, currentPath, standalone, series }: PostTre
           });
         });
         
-        nodes.push(seriesNode);
+        seriesHierarchy.set(seriesKey, seriesNode);
       });
     }
+    
+    // Second pass: build hierarchy
+    seriesHierarchy.forEach((node, key) => {
+      const group = series.get(key);
+      if (!group) {
+        rootSeriesNodes.push(node);
+        return;
+      }
+      
+      // Check if this series has a parent
+      if (group.path && group.path.length > 1) {
+        // Try to find parent series
+        const parentPath = group.path.slice(0, -1).join('/');
+        const parentNode = seriesHierarchy.get(parentPath);
+        
+        if (parentNode) {
+          // This is a nested series, add to parent's children
+          if (!parentNode.children) {
+            parentNode.children = [];
+          }
+          // Insert the series node before the posts
+          const postsStartIndex = parentNode.children.findIndex(child => child.type === 'post');
+          if (postsStartIndex >= 0) {
+            parentNode.children.splice(postsStartIndex, 0, node);
+          } else {
+            parentNode.children.push(node);
+          }
+        } else {
+          // Parent not found, treat as root
+          rootSeriesNodes.push(node);
+        }
+      } else {
+        // Top-level series
+        rootSeriesNodes.push(node);
+      }
+    });
+    
+    // Add standalone posts first
+    standalone.forEach(post => {
+      nodes.push({
+        type: 'post',
+        id: post.id,
+        title: post.data.title,
+        href: `/${post.id}/`,
+      });
+    });
+    
+    // Then add the series hierarchy
+    nodes.push(...rootSeriesNodes);
     
     setTreeData(nodes);
   }, [posts, standalone, series]);
