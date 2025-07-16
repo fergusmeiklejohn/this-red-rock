@@ -15,6 +15,10 @@ const blog = defineCollection({
 		heroImage: image().optional(),
 		theme: z.string().optional(),
 		tags: z.array(z.string()).default([]),
+		// Series metadata
+		series: z.string().optional(),
+		seriesOrder: z.number().optional(),
+		seriesDescription: z.string().optional(),
 	}),
 });
 

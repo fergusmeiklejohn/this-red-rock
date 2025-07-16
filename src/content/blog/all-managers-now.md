@@ -3,7 +3,7 @@ title: "We’re all managers now."
 description: "On becoming a manager of digital agents and the art of human-AI collaboration"
 excerpt: "As AI agents compress weeks into mornings, our role shifts from doing to directing, from coding to creative problem-solving."
 pubDate: "Jul 10 2025"
-heroImage: "../../assets/all-managers-now.jpg"
+heroImage: "@/assets/all-managers-now.jpg"
 theme: "Working with Claude"
 tags: ["AI agents", "productivity", "digital teams", "human creativity", "future of work"]
 ---

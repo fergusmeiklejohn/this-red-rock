@@ -2,7 +2,7 @@
 title: "A Heap of Broken Images"
 description: "Fragmentation in the world, from T.S. Eliot to social media"
 pubDate: "Jul 11 2025"
-heroImage: "../../assets/a-heap-of-broken-images.jpg"
+heroImage: "@/assets/a-heap-of-broken-images.jpg"
 theme: "Philosophy"
 tags: ["philosophy", "literature", "technology"]
 ---
