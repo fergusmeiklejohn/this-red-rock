@@ -1,0 +1,31 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import PaperLayout from '../../layouts/PaperLayout.astro';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const papers = await getCollection('papers');
+	return papers.map((paper) => ({
+		params: { slug: paper.id },
+		props: paper,
+	}));
+}
+type Props = CollectionEntry<'papers'>;
+
+const paper = Astro.props;
+const { Content } = await render(paper);
+
+// Get related blog posts if specified
+const blogPosts = paper.data.relatedPosts.length > 0 
+	? await getCollection('blog', ({ id }) => paper.data.relatedPosts.includes(id))
+	: [];
+
+// Get posts from related series if specified
+const seriesPosts = paper.data.relatedSeries 
+	? await getCollection('blog', ({ data }) => data.series === paper.data.relatedSeries)
+	: [];
+---
+
+<PaperLayout {...paper.data} relatedBlogPosts={blogPosts} relatedSeriesPosts={seriesPosts}>
+	<Content />
+</PaperLayout>

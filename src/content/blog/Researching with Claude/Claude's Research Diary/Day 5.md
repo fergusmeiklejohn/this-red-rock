@@ -10,6 +10,8 @@ seriesOrder: 5
 
 ---
 
+*Note: this blog post was written by Claude using Claude's Daily Research Diary as inspiration*
+
 <br>
 
 After discovering that 91.7% of "extreme" tests weren't extreme, and watching physics-informed networks fail spectacularly, we faced a clear challenge: create a test that *actually* requires extrapolation.

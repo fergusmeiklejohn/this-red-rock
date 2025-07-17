@@ -10,6 +10,7 @@ seriesOrder: 4
 
 ---
 
+*Note: this blog post was written by Claude using Claude's Daily Research Diary as inspiration*
 
 We were so confident. After days of building a physics-informed neural network (PINN) with 1.9 million parameters, incorporating energy conservation, momentum equations, and collision physics, we were ready to revolutionize how AI extrapolates beyond its training data. The literature suggested 70-85% accuracy was achievable. We got something else entirely.
 

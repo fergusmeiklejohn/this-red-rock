@@ -26,8 +26,8 @@ for (const [key, seriesGroup] of series) {
 ---
 
 <aside class="hidden lg:block w-64 border-r border-gray-200 dark:border-gray-700 min-h-screen p-6 bg-white dark:bg-gray-900 flex-shrink-0">
-	{/* Blog Home Link */}
-	<div class="mb-6">
+	{/* Navigation Links */}
+	<div class="mb-6 space-y-2">
 		<a
 			href="/"
 			class={`block py-2 text-sm text-gray-600 dark:text-gray-400 transition-all ${
@@ -37,6 +37,16 @@ for (const [key, seriesGroup] of series) {
 			}`}
 		>
 			Index
+		</a>
+		<a
+			href="/papers/"
+			class={`block py-2 text-sm text-gray-600 dark:text-gray-400 transition-all ${
+				currentPath === "/papers/" || currentPath.startsWith("/papers/")
+					? "font-bold"
+					: "hover:underline hover:font-semibold hover:decoration-red-700 dark:hover:decoration-red-400"
+			}`}
+		>
+			Papers
 		</a>
 	</div>
 

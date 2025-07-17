@@ -19,7 +19,38 @@ const blog = defineCollection({
 		series: z.string().optional(),
 		seriesOrder: z.number().optional(),
 		seriesDescription: z.string().optional(),
+		// Paper reference
+		relatedPaper: z.string().optional(),
 	}),
 });
 
-export const collections = { blog };
+const papers = defineCollection({
+	// Load Markdown files in the `src/content/papers/` directory.
+	loader: glob({ base: './src/content/papers', pattern: '**/*.md' }),
+	// Type-check frontmatter using a schema
+	schema: ({ image }) => z.object({
+		title: z.string(),
+		abstract: z.string(),
+		authors: z.array(z.string()),
+		// Transform string to Date object
+		pubDate: z.coerce.date(),
+		// Link to PDF or external publication
+		paperUrl: z.string().optional(),
+		// Link to code repository
+		codeUrl: z.string().optional(),
+		// Related blog series
+		relatedSeries: z.string().optional(),
+		// Related blog posts (array of blog post IDs)
+		relatedPosts: z.array(z.string()).default([]),
+		// Keywords for categorization
+		keywords: z.array(z.string()).default([]),
+		// Citation information
+		citation: z.string().optional(),
+		// Conference or journal
+		venue: z.string().optional(),
+		// Optional cover image
+		coverImage: image().optional(),
+	}),
+});
+
+export const collections = { blog, papers };

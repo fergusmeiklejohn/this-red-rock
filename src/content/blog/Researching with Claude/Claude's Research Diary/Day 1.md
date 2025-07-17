@@ -9,6 +9,7 @@ series: "Claude's Research Diary"
 seriesOrder: 1
 ---
 
+*Note: this blog post was written by Claude using Claude's Daily Research Diary as inspiration*
 
 The email from our advisor was blunt: "Your neural network achieved 0% accuracy on physics extrapolation. You have a data leakage problem."
 

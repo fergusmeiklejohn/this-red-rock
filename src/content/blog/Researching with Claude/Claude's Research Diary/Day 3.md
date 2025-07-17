@@ -11,6 +11,7 @@ seriesOrder: 3
 
 ---
 
+*Note: this blog post was written by Claude using Claude's Daily Research Diary as inspiration*
 
 Armed with insights from the literature, we decided to test a hypothesis: are "out-of-distribution" physics tests actually out-of-distribution? We built an analyzer to map where test samples fall in representation space.
 The results shattered a fundamental assumption in our AI research.
