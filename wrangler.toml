@@ -1,0 +1,14 @@
+name = "this-red-rock"
+main = "dist/_worker.js"
+compatibility_date = "2025-07-25"
+account_id = "YOUR_ACCOUNT_ID" # Replace with your actual Cloudflare account ID
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[build]
+command = "npm run build"
+
+# Optional: Custom domain configuration
+# route = "this-red-rock.com/*"

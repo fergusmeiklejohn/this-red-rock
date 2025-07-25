@@ -9,8 +9,5 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://this-red-rock.com',
   integrations: [mdx(), sitemap(), tailwind(), react()],
-  output: 'static',
-  build: {
-    assets: 'images'
-  }
+  output: 'static'
 });

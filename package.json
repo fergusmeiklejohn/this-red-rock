@@ -4,8 +4,9 @@
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "astro dev",
-		"build": "astro build",
-		"preview": "astro build && wrangler pages dev",
+		"build": "astro build && cp src/_worker.js dist/_worker.js && cp public/_headers dist/_headers",
+		"preview": "wrangler dev",
+		"deploy": "wrangler deploy",
 		"astro": "astro",
 		"cf-typegen": "wrangler types"
 	},
