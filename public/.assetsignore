@@ -1,0 +1,2 @@
+# This file tells Cloudflare Pages to serve these as static assets
+# and not process them through Workers
