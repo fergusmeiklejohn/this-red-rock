@@ -1,7 +1,7 @@
 name = "this-red-rock"
 main = "dist/_worker.js"
 compatibility_date = "2025-07-25"
-account_id = "YOUR_ACCOUNT_ID" # Replace with your actual Cloudflare account ID
+account_id = "d565ae8f6517aced5bbbb3a075fdea8f"
 
 [assets]
 directory = "./dist"
