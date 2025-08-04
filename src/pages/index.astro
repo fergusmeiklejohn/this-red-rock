@@ -30,6 +30,14 @@ seriesHierarchy.forEach((seriesGroup) => {
 	displayItems.push({ type: 'series', data: { key: seriesGroup.path.join('/'), ...seriesGroup } });
 });
 
+// Ensure Claude's Research Diary is included even if nested
+series.forEach((seriesGroup, key) => {
+	if ((seriesGroup.displayName === "Claude's Research Diary" || key === "Claude's Research Diary") && 
+	    !displayItems.some(item => item.type === 'series' && (item.data.displayName === "Claude's Research Diary" || item.data.key === "Claude's Research Diary"))) {
+		displayItems.push({ type: 'series', data: { key, ...seriesGroup } });
+	}
+});
+
 // Sort by most recent date
 displayItems.sort((a, b) => {
 	const aDate = a.type === 'post' 
@@ -43,7 +51,7 @@ displayItems.sort((a, b) => {
 
 // Get all unique themes for category tabs
 const themes = [...new Set(allPosts.map(post => post.data.theme).filter(Boolean))];
-const categories = ['All', ...themes, 'Series'];
+const categories = ['All', ...themes, "Claude's Diary"];
 
 // Helper to render nested series
 function renderSeriesHierarchy(seriesMap: Map<string, any>) {
@@ -149,8 +157,9 @@ function renderSeriesHierarchy(seriesMap: Map<string, any>) {
 							// Series group
 							const seriesGroup = item.data;
 							const latestPost = seriesGroup.posts[seriesGroup.posts.length - 1];
+							const isClaudesDiary = seriesGroup.name === "Claude's Research Diary" || seriesGroup.displayName === "Claude's Research Diary";
 							return (
-								<article class="border-b border-gray-100 dark:border-gray-800 pb-8 last:border-b-0 post-item" data-theme={latestPost.data.theme || 'General'} data-type="series">
+								<article class="border-b border-gray-100 dark:border-gray-800 pb-8 last:border-b-0 post-item series-item" data-theme={latestPost.data.theme || 'General'} data-type="series" data-series-name={seriesGroup.displayName || seriesGroup.name} data-claude-diary={isClaudesDiary ? 'true' : 'false'}>
 									<div class="mb-3 flex items-center gap-2">
 										<CategoryBadge category={latestPost.data.theme || 'General'} />
 										<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400" style="--tw-text-opacity: 1; color: rgb(214 3 1 / var(--tw-text-opacity))">
@@ -159,6 +168,11 @@ function renderSeriesHierarchy(seriesMap: Map<string, any>) {
 											</svg>
 											Series
 										</span>
+										<button class="series-toggle ml-auto text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1" aria-label="Toggle series">
+											<svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+											</svg>
+										</button>
 									</div>
 									<div class="mb-4">
 										<h2 class="text-lg sm:text-xl font-semibold text-black dark:text-white mb-2 leading-tight">
@@ -168,22 +182,44 @@ function renderSeriesHierarchy(seriesMap: Map<string, any>) {
 											{seriesGroup.posts.length} {seriesGroup.posts.length === 1 ? 'episode' : 'episodes'} • Latest: <FormattedDate date={latestPost.data.pubDate} />
 										</div>
 									</div>
-									<div class="space-y-3 ml-4">
+									<div class={`series-content space-y-4 mt-4 ${isClaudesDiary ? '' : 'hidden'}`}>
 										{seriesGroup.posts.map((post, index) => {
 											const displayName = getSeriesDisplayName(post);
+											const episodeMatch = post.id.match(/Day (\d+)/);
+											const dayNumber = episodeMatch ? episodeMatch[1] : (index + 1);
 											return (
-												<div class="flex items-start gap-3">
-													<span class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{index + 1}.</span>
-													<div class="flex-1">
-														<h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-															<a href={`/${post.id}/`} class="hover:underline">
-																{displayName}
-															</a>
-														</h3>
-														<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
-															{post.data.description}
-														</p>
-													</div>
+												<div class={`${isClaudesDiary ? 'bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700' : 'flex items-start gap-3'}`}>
+													{isClaudesDiary ? (
+														<>
+															<div class="mb-2">
+																<h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+																	<a href={`/${post.id}/`} class="hover:underline">
+																		{post.data.title}
+																	</a>
+																</h3>
+																<div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+																	<FormattedDate date={post.data.pubDate} />
+																</div>
+															</div>
+															<p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+																{post.data.description}
+															</p>
+														</>
+													) : (
+														<>
+															<span class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{index + 1}.</span>
+															<div class="flex-1">
+																<h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
+																	<a href={`/${post.id}/`} class="hover:underline">
+																		{displayName}
+																	</a>
+																</h3>
+																<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+																	{post.data.description}
+																</p>
+															</div>
+														</>
+													)}
 												</div>
 											);
 										})}
@@ -197,32 +233,70 @@ function renderSeriesHierarchy(seriesMap: Map<string, any>) {
 		</div>
 
 		<script>
-			// Category filtering functionality
+			// Category filtering and series expand/collapse functionality
 			document.addEventListener('DOMContentLoaded', function() {
 				const tabs = document.querySelectorAll('.category-tab');
 				const posts = document.querySelectorAll('.post-item');
+				const seriesItems = document.querySelectorAll('.series-item');
 
+				// Series expand/collapse functionality
+				seriesItems.forEach(seriesItem => {
+					const toggleButton = seriesItem.querySelector('.series-toggle');
+					const seriesContent = seriesItem.querySelector('.series-content');
+					const toggleIcon = toggleButton.querySelector('svg');
+					
+					// Check if this is Claude's Diary (already expanded by default)
+					const isClaudesDiary = seriesItem.getAttribute('data-claude-diary') === 'true';
+					if (isClaudesDiary) {
+						toggleIcon.classList.add('rotate-180');
+					}
+					
+					toggleButton.addEventListener('click', function(e) {
+						e.preventDefault();
+						
+						// Toggle visibility
+						seriesContent.classList.toggle('hidden');
+						
+						// Rotate arrow
+						toggleIcon.classList.toggle('rotate-180');
+					});
+				});
+
+				// Category filtering
 				tabs.forEach(tab => {
 					tab.addEventListener('click', function() {
 						const selectedCategory = this.getAttribute('data-category');
 						
 						// Update active tab
 						tabs.forEach(t => {
-							t.classList.remove('bg-black', 'text-white');
-							t.classList.add('text-gray-600', 'hover:text-gray-900');
+							t.classList.remove('bg-black', 'text-white', 'dark:bg-white', 'dark:text-black');
+							t.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-white');
 						});
-						this.classList.add('bg-black', 'text-white');
-						this.classList.remove('text-gray-600', 'hover:text-gray-900');
+						this.classList.add('bg-black', 'text-white', 'dark:bg-white', 'dark:text-black');
+						this.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-white');
 						
 						// Filter posts
 						posts.forEach(post => {
 							const postTheme = post.getAttribute('data-theme');
 							const postType = post.getAttribute('data-type');
+							const isClaudesDiary = post.getAttribute('data-claude-diary') === 'true';
 							
 							if (selectedCategory === 'All') {
 								post.style.display = 'block';
-							} else if (selectedCategory === 'Series' && postType === 'series') {
-								post.style.display = 'block';
+							} else if (selectedCategory === "Claude's Diary") {
+								// Show only Claude's Research Diary series
+								if (isClaudesDiary) {
+									post.style.display = 'block';
+									// Auto-expand Claude's Diary when its tab is selected
+									const seriesContent = post.querySelector('.series-content');
+									const toggleIcon = post.querySelector('.series-toggle svg');
+									if (seriesContent && seriesContent.classList.contains('hidden')) {
+										seriesContent.classList.remove('hidden');
+										toggleIcon.classList.add('rotate-180');
+									}
+								} else {
+									post.style.display = 'none';
+								}
 							} else if (postTheme === selectedCategory && postType !== 'series') {
 								post.style.display = 'block';
 							} else {

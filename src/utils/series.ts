@@ -129,24 +129,24 @@ export function groupPostsBySeries(posts: CollectionEntry<'blog'>[]): {
     }
   });
   
-  // Sort posts within each series by date or episode number
+  // Sort posts within each series by date or episode number (most recent first)
   seriesMap.forEach(series => {
     series.posts.sort((a, b) => {
-      // First try seriesOrder from frontmatter
+      // First try seriesOrder from frontmatter (reversed for descending order)
       if (a.data.seriesOrder !== undefined && b.data.seriesOrder !== undefined) {
-        return a.data.seriesOrder - b.data.seriesOrder;
+        return b.data.seriesOrder - a.data.seriesOrder;
       }
       
       const aInfo = getSeriesFromPath(a.id);
       const bInfo = getSeriesFromPath(b.id);
       
-      // Then try to sort by episode number from path
+      // Then try to sort by episode number from path (reversed for descending order)
       if (aInfo?.episodeNumber && bInfo?.episodeNumber) {
-        return aInfo.episodeNumber - bInfo.episodeNumber;
+        return bInfo.episodeNumber - aInfo.episodeNumber;
       }
       
-      // Fall back to date
-      return a.data.pubDate.valueOf() - b.data.pubDate.valueOf();
+      // Fall back to date (reversed for most recent first)
+      return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
     });
   });
   
